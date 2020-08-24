@@ -27,7 +27,11 @@ public class DiagnosticsMenuTableViewController: UITableViewController {
         super.viewDidLoad()
         
         title = "Diagnostics [BETA]"
-        navigationController?.navigationBar.prefersLargeTitles = true
+        if #available(iOS 11.0, *) {
+            navigationController?.navigationBar.prefersLargeTitles = true
+        } else {
+            // Fallback on earlier versions
+        }
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "serviceRow")
         self.toolbarItems = [UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil) ,UIBarButtonItem(title: "Close", style: .done, target: self, action: #selector(handleClose))]
         self.navigationController?.isToolbarHidden = false

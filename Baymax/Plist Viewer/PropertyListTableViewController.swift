@@ -14,7 +14,11 @@ class PropertyListTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.prefersLargeTitles = false
+        if #available(iOS 11.0, *) {
+            navigationController?.navigationBar.prefersLargeTitles = false
+        } else {
+            // Fallback on earlier versions
+        }
         tableView.register(UINib(nibName: "InformationTableViewCell", bundle: Bundle(for: PropertyListTableViewController.self)), forCellReuseIdentifier: "propertyRow")
     }
     

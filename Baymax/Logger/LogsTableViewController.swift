@@ -49,7 +49,11 @@ class LogsTableViewController: UITableViewController {
             UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deleteAll(_:)))
         ]
         
-        navigationController?.navigationBar.prefersLargeTitles = false
+        if #available(iOS 11.0, *) {
+            navigationController?.navigationBar.prefersLargeTitles = false
+        } else {
+            // Fallback on earlier versions
+        }
         tableView.register(UINib(nibName: "InformationTableViewCell", bundle: Bundle(for: LogsTableViewController.self)), forCellReuseIdentifier: "propertyRow")
         tableView.register(UINib(nibName: "SwitchTableViewCell", bundle: Bundle(for: LogsTableViewController.self)), forCellReuseIdentifier: "switchRow")
         
@@ -170,6 +174,7 @@ class LogsTableViewController: UITableViewController {
         }
     }
     
+    @available(iOS 11.0, *)
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
         guard indexPath.section == 1, !isSharing else { return nil }
