@@ -32,8 +32,13 @@ class LogsTableViewController: UITableViewController {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-    
-    var logFiles: [LogFile] = []
+
+    /// `LogFile`s which have been written to disk
+    private var logFiles: [LogFile] = [] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.setToolbarHidden(false, animated: animated)
@@ -52,26 +57,11 @@ class LogsTableViewController: UITableViewController {
         navigationController?.navigationBar.prefersLargeTitles = false
         tableView.register(UINib(nibName: "InformationTableViewCell", bundle: Bundle(for: LogsTableViewController.self)), forCellReuseIdentifier: "propertyRow")
         tableView.register(UINib(nibName: "SwitchTableViewCell", bundle: Bundle(for: LogsTableViewController.self)), forCellReuseIdentifier: "switchRow")
-        
-        let fm = FileManager.default
-        guard let directory = Logger.shared.directory else { return }
-        
-        guard let contents = try? fm.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.fileSizeKey, .creationDateKey], options: []) else {
-            return
+
+        // Fetch log files
+        Logger.shared.logFiles { [weak self] result in
+            self?.logFiles = result.success ?? []
         }
-        
-        logFiles = contents.compactMap({ (url) -> LogFile? in
-            guard let resources = try? url.resourceValues(forKeys: [.fileSizeKey, .creationDateKey]), let creationDate = resources.creationDate else {
-                return nil
-            }
-            return LogFile(url: url, creationDate: creationDate, fileSize: resources.fileSize)
-        })
-        
-        logFiles.sort { (fileA, fileB) -> Bool in
-            return fileA.creationDate > fileB.creationDate
-        }
-        
-        tableView.reloadData()
     }
     
     var isSharing: Bool = false {

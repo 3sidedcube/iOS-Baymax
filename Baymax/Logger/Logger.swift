@@ -70,7 +70,7 @@ public struct Logger: TextOutputStream {
     
     private let fm = FileManager.default
     
-    internal var directory: URL? {        
+    private var directory: URL? {
         guard let url = fm.urls(for: searchPathDirectory, in: domainMask).first else { return nil }
         return url.appendingPathComponent("baymax_logs", isDirectory: true)
     }
@@ -98,27 +98,26 @@ public struct Logger: TextOutputStream {
         guard let directory = directory, !fm.fileExists(atPath: directory.path) else { return }
         try? fm.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
     }
-    
+
+    /// Write `string` to log file
+    ///
+    /// - Parameter string: `String`
     public func write(_ string: String) {
-        
-        guard LogsTool.loggingEnabled else {
-            return
-        }
-                
-        var writeString = string
+        guard LogsTool.loggingEnabled, let directory = directory else { return }
         
         // We can't ignore empty strings entirely, because when using this with `print(_:to)` this function is
         // called with "\n" as the string to write!
-        if !writeString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            writeString = "\(formatter.string(from: Date())) \(writeString)"
-        }
+        let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        let writeString = "\(formatter.string(from: Date())) \(trimmed)"
         
-        guard let directory = directory, let writeData = writeString.data(using: .utf8) else { return }
         let log = directory.appendingPathComponent(fileName)
-        
+
         // Using `async` means the calling thread won't block, but we are still writing to the
         // log file atomically
         logQueue.async {
+            guard let writeData = writeString.data(using: .utf8) else { return }
+
             if let handle = try? FileHandle(forWritingTo: log) {
                 handle.seekToEndOfFile()
                 handle.write(writeData)
@@ -128,4 +127,62 @@ public struct Logger: TextOutputStream {
             }
         }
     }
+
+    /// Fetch log files on the `logQueue` and complete on the `.main` queue
+    /// 
+    /// - Parameter completion: Completion handler
+    func logFiles(completion: @escaping (Result<[LogFile], Error>) -> Void) {
+        guard let directory = directory else {
+            completion(.failure(LogError.directoryNotFound))
+            return
+        }
+
+        logQueue.async {
+            let result = Result({ try logFiles(in: directory) })
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
+    }
+
+    /// Fetch `LogFile` in `directory`
+    ///
+    /// - Parameter directory: `URL`
+    private func logFiles(in directory: URL) throws -> [LogFile] {
+        let contents = try fm.contentsOfDirectory(
+            at: directory,
+            includingPropertiesForKeys: [.fileSizeKey, .creationDateKey],
+            options: []
+        )
+
+        let logFiles = try contents.compactMap { url -> LogFile in
+            let resourceValues = try url.resourceValues(
+                forKeys: [.fileSizeKey, .creationDateKey]
+            )
+
+            guard let creationDate = resourceValues.creationDate else {
+                throw LogError.createdDate
+            }
+
+            return LogFile(
+                url: url,
+                creationDate: creationDate,
+                fileSize: resourceValues.fileSize
+            )
+        }
+
+        return logFiles.sorted { $0.creationDate > $1.creationDate }
+    }
+}
+
+// MARK: - LogError
+
+/// `Error` when logging
+enum LogError: Error {
+
+    /// Failed to find directory
+    case directoryNotFound
+
+    /// Created date not found on logFile
+    case createdDate
 }

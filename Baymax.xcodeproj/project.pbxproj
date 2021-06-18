@@ -30,6 +30,7 @@
 		B1B8062B2434B20D00112B3D /* LogDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B8062A2434B20D00112B3D /* LogDetailViewController.swift */; };
 		B1B806302434B55100112B3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1B8062F2434B55100112B3D /* Assets.xcassets */; };
 		B1B806382434EB4800112B3D /* BaymaxImageLiteral.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B806372434EB4800112B3D /* BaymaxImageLiteral.swift */; };
+		B8A9BE2E267C798300C39F8E /* Result+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A9BE2D267C798300C39F8E /* Result+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 		B1B8062A2434B20D00112B3D /* LogDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogDetailViewController.swift; sourceTree = "<group>"; };
 		B1B8062F2434B55100112B3D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B1B806372434EB4800112B3D /* BaymaxImageLiteral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaymaxImageLiteral.swift; sourceTree = "<group>"; };
+		B8A9BE2D267C798300C39F8E /* Result+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Result+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,6 +125,7 @@
 				49E0687B21944A5400F9B93B /* Baymax.h */,
 				49E0687C21944A5400F9B93B /* Info.plist */,
 				B1B8062F2434B55100112B3D /* Assets.xcassets */,
+				B8A9BE2D267C798300C39F8E /* Result+Extensions.swift */,
 			);
 			path = Baymax;
 			sourceTree = "<group>";
@@ -288,6 +291,7 @@
 				B1B8061C2434976700112B3D /* SwitchTableViewCell.swift in Sources */,
 				49E0688621944B8900F9B93B /* DiagnosticsServiceProtocol.swift in Sources */,
 				49FD399A2199870200963C41 /* PropertyListTableViewController.swift in Sources */,
+				B8A9BE2E267C798300C39F8E /* Result+Extensions.swift in Sources */,
 				B1A0D6CF2433AAF100DE753D /* Logger.swift in Sources */,
 				49E068B3219458C900F9B93B /* DiagnosticsMenuTableViewController.swift in Sources */,
 				4941F7A92195A63300F1081E /* DiagnosticsManager.swift in Sources */,
